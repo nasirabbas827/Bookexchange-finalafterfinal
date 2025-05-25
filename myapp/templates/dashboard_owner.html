@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <h2 class="mb-4">Owner Dashboard</h2>
+    <div class="alert alert-info">
+        Welcome, <strong>{{ user.name }}</strong>. You are logged in as an <strong>Owner</strong>.
+    </div>
+
+    <h4 class="mt-5">Book Requests for Your Books</h4>
+
+    {% if messages %}
+        <div class="alert alert-warning mt-3">
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if requests %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Seeker</th>
+                        <th>Status</th>
+                        <th>Requested At</th>
+                        <th>Updated At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for req in requests %}
+                    <tr>
+                        <td>{{ req.book.title }}</td>
+                        <td>{{ req.seeker.name }}</td>
+                        <td>
+                            <form method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="request_id" value="{{ req.id }}">
+                                <select class="form-select form-select-sm" name="status" onchange="this.form.submit()">
+                                    <option value="pending" {% if req.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="approved" {% if req.status == 'approved' %}selected{% endif %}>Approved</option>
+                                    <option value="rejected" {% if req.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>{{ req.requested_at }}</td>
+                        <td>{{ req.updated_at }}</td>
+                        <td>
+                            <a href="{% url 'owner_message_thread' user.id req.seeker.id req.book.id %}" class="btn btn-primary btn-sm">
+                                Message
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-secondary mt-3">No book requests found.</div>
+    {% endif %}
+</div>
+
+{% endblock %}

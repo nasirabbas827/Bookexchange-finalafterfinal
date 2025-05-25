@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Seeker Dashboard</h2>
+    <p class="text-muted">Welcome, {{ user.name }}. You are logged in as a <strong>Seeker</strong>.</p>
+
+    {% if matched_books %}
+    <div class="alert alert-success">
+        <strong>New Match Found!</strong> Books matching your wishlist are now available:
+        <ul class="mb-0">
+            {% for book in matched_books %}
+            <li><strong>{{ book.title }}</strong> by {{ book.author }} ({{ book.genre }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="get" action="{% url 'dashboard' %}" class="input-group mb-4 w-50">
+        <input type="text" name="q" class="form-control" placeholder="Search books..." value="{{ query }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+
+    {% if books %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for book in books %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if book.photo_url %}
+                    <img src="{{ book.photo_url.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 250px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+                        <span class="text-muted">No Image</span>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text">
+                        <strong>Author:</strong> {{ book.author }}<br>
+                        <strong>Genre:</strong> {{ book.genre }}<br>
+                        <strong>Location:</strong> {{ book.location }}<br>
+                        <strong>Condition:</strong> {{ book.condition }}<br>
+                        <strong>Status:</strong>
+                        <span class="badge {% if book.status == 'Available' %}bg-success{% elif book.status == 'Reserved' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ book.status }}
+                        </span>
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    {% if book.status == 'Available' %}
+                        <form method="post" action="{% url 'request_book' book.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-success">Request</button>
+                        </form>
+                    {% else %}
+                        <button type="button" class="btn btn-sm btn-secondary" disabled>Request</button>
+                    {% endif %}
+                    <a href="{% url 'book_review' book.id %}" class="btn btn-sm btn-info ms-1">Reviews</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="alert alert-info">No books found.</div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'seeker_requests' %}" class="btn btn-outline-primary me-2">View Your Requests</a>
+        <a href="{% url 'wishlist_view' %}" class="btn btn-outline-secondary">Your Wishlist</a>
+    </div>
+</div>
+{% endblock %}

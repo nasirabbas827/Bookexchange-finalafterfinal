@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Hero Section -->
+    <div class="p-5 rounded bg-light mb-5 text-center shadow-sm" style="background: url('https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1470&q=80') center center / cover no-repeat; color: white;">
+        <div class="bg-dark bg-opacity-50 p-4 rounded">
+            <h1 class="display-4 fw-bold">📚 Welcome to the Online Book Exchange Platform</h1>
+            <p class="lead">Discover, request, and exchange books with people near you. It's simple and free!</p>
+            <form method="get" action="{% url 'index' %}" class="input-group w-75 mx-auto mt-4">
+                <input type="text" name="q" class="form-control rounded-start" placeholder="Search books by title, author, genre, or location" value="{{ query }}">
+                <button class="btn btn-primary rounded-end" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Books List -->
+    {% if books %}
+    <h2 class="mb-4 text-primary">Available Books</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for book in books %}
+        <div class="col">
+            <div class="card h-100 border shadow-sm">
+                {% if book.photo_url %}
+                    <img src="{{ book.photo_url.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 250px; object-fit: cover;">
+                {% else %}
+                    <img src="https://via.placeholder.com/400x250?text=No+Image" alt="No Image" class="card-img-top" style="height: 250px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text">
+                        <strong>Author:</strong> {{ book.author }}<br>
+                        <strong>Genre:</strong> {{ book.genre }}<br>
+                        <strong>Location:</strong> {{ book.location }}<br>
+                        <strong>Condition:</strong> {{ book.condition }}<br>
+                        <strong>Status:</strong>
+                        <span class="badge {% if book.status == 'Available' %}bg-success{% elif book.status == 'Reserved' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ book.status }}
+                        </span>
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                    {% if book.status == 'Available' %}
+                        <a href="{% url 'request_book' book.id %}" class="btn btn-sm btn-success">Request</a>
+                    {% else %}
+                        <button type="button" class="btn btn-sm btn-secondary" disabled>Request</button>
+                    {% endif %}
+                    <a href="{% url 'book_review' book.id %}" class="btn btn-sm btn-outline-info">Reviews</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">No books found matching your search.</div>
+    {% endif %}
+
+    <!-- Featured Books Section -->
+    <section class="mt-5">
+        <h2 class="text-secondary mb-4">🌟 Featured Books</h2>
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <!-- Example featured books with online images -->
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Featured Book 1" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">The Great Gatsby</h5>
+                        <p class="card-text text-muted">By F. Scott Fitzgerald</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Featured Book 2" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">1984</h5>
+                        <p class="card-text text-muted">By George Orwell</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Featured Book 3" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">To Kill a Mockingbird</h5>
+                        <p class="card-text text-muted">By Harper Lee</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm h-100">
+                    <img src="https://images.unsplash.com/photo-1526045612212-70caf35c14df?auto=format&fit=crop&w=400&q=80" class="card-img-top" alt="Featured Book 4" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">Pride and Prejudice</h5>
+                        <p class="card-text text-muted">By Jane Austen</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="mt-5">
+        <h2 class="text-secondary mb-3">📘 How It Works</h2>
+        <ol class="fs-5">
+            <li>Register or log in to your account.</li>
+            <li>Browse or search for books by title, author, or genre.</li>
+            <li>Request a book and chat with the owner.</li>
+            <li>Meet up or arrange delivery to complete the exchange.</li>
+        </ol>
+    </section>
+
+    <!-- Join Community Section -->
+    <section class="mt-5 text-center">
+        <h2 class="text-secondary mb-3">👥 Join Our Community</h2>
+        <p class="fs-5">Connect with other readers, expand your library, and make new friends along the way.</p>
+        <a href="{% url 'register' %}" class="btn btn-lg btn-outline-primary">Sign Up Now</a>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="mt-5 mb-5">
+        <h2 class="text-secondary mb-3">📞 Contact Us</h2>
+        <p>If you have questions, suggestions, or need support, reach out via <a href="#" class="text-decoration-underline">our contact form</a> or email <a href="mailto:support@bookexchange.com" class="text-decoration-underline">support@bookexchange.com</a>.</p>
+    </section>
+</div>
+{% endblock %}

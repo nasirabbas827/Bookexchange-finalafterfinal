@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Messages about "<em>{{ book.title }}</em>"</h2>
+  <p><strong>Owner:</strong> {{ owner.name }}</p>
+  <p><strong>Seeker:</strong> {{ seeker.name }}</p>
+
+  <div class="border rounded p-3 mb-4" style="max-height: 400px; overflow-y: auto; background-color: #f9f9f9;">
+    {% if messages %}
+      {% for msg in messages %}
+      <div class="mb-3">
+        <strong>{{ msg.sender.name }}:</strong> {{ msg.message_content }}<br>
+        <small class="text-muted"><em>{{ msg.sent_at|date:"Y-m-d H:i" }}</em></small>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted">No messages yet.</p>
+    {% endif %}
+  </div>
+
+  <form method="post" class="mb-3">
+    {% csrf_token %}
+    <div class="mb-3">
+      <textarea name="message_content" class="form-control" rows="3" placeholder="Write your message here..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+
+  <a href="{% url 'seeker_requests' %}" class="btn btn-secondary">Back to Requests</a>
+</div>
+{% endblock %}

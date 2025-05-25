@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-3">Book Review: {{ book.title }}</h2>
+    <div class="mb-4">
+        <p><strong>Author:</strong> {{ book.author }}</p>
+        <p><strong>Genre:</strong> {{ book.genre }}</p>
+        <p><strong>Condition:</strong> {{ book.condition }}</p>
+        <p><strong>Location:</strong> {{ book.location }}</p>
+    </div>
+
+    <h3 class="mb-3">Reviews</h3>
+    {% if reviews %}
+        <div class="list-group mb-4">
+            {% for review in reviews %}
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>{{ review.reviewer.name }}</strong>
+                    <span class="badge bg-primary rounded-pill">Rating: {{ review.rating }}/5</span>
+                </div>
+                <p class="mb-1">{{ review.comment|linebreaks }}</p>
+                <small class="text-muted">Reviewed on {{ review.reviewed_at }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">No reviews yet.</div>
+    {% endif %}
+
+    <h3 class="mb-3">Add a Review</h3>
+    <form method="post" action="{% url 'book_review' book.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="rating" class="form-label">Rating (1-5):</label>
+            <input type="number" class="form-control" name="rating" min="1" max="5" required>
+        </div>
+        <div class="mb-3">
+            <label for="comment" class="form-label">Comment:</label>
+            <textarea class="form-control" name="comment" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Submit Review</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary ms-2">Back to Dashboard</a>
+    </form>
+</div>
+
+{% endblock %}
